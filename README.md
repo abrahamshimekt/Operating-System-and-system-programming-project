@@ -7,13 +7,13 @@ int value;
 struct Node* next;
 }
 - struct HashTable{
-struct Binding* buckets[BUCKET_COUNT]
+struct Node* buckets[BUCKET_COUNT]
 }
 ### Interfaces
 - struct HashTable* create();
 - unsigned int hash(const char* key);
 - bool add(struct HashTable* table, const char* key, int value);
-- struct Binding* find(struct HashTable* table, const char* key);
+- struct Node* find(struct HashTable* table, const char* key);
 - bool remove(struct HashTable* table, const char* key);
 - void delete_table(struct HashTable* table);
 ## De-comment Program
