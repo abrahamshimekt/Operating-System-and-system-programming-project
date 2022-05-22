@@ -1,4 +1,7 @@
 #include "hash_table_header.h"
+#define FNV_OFFSET 14695
+#define FNV_PRIME 10995
+#include <stdint.h>
 struct Binding
 {
     char* key;
@@ -13,15 +16,14 @@ struct HashTable
 
 unsigned int hash(const char *key)
 {
-    unsigned long int value = 0;
-    unsigned int i = 0;
-    unsigned int key_len = strlen(key);
-    for (; i < key_len; ++i)
-    {
-        value = value * 37 + key[i];
+    enum{HASH_MULT=65599};
+    unsigned int i;
+    unsigned int h=0;
+
+    for(i=0; key[i] !='\0';i++){
+        h=h * HASH_MULT + (unsigned int)key[i];
+        return h% BUCKET_COUNT;
     }
-    value = value % BUCKET_COUNT;
-    return value;
 }
 
 struct Binding* hashTable_pair(const char* key, int value)
@@ -51,7 +53,7 @@ bool add(struct HashTable *bucket, const char *key, int value)
     unsigned int hashIndex = hash(key);
     struct Binding* binding = (struct Binding*) malloc(sizeof(struct Binding));
     binding = bucket->buckets[hashIndex];
-
+    
     // no entry means slot empty, insert immediately
     if (binding == NULL)
     {
@@ -169,23 +171,14 @@ bool remove_item(struct HashTable *bucket, const char *key)
     return false;
 }
 void delete_table(struct HashTable* table){
-    struct Binding* crawler;
-    struct Binding* temp;
-     for(int i = 0; i < BUCKET_COUNT; i++)
-        {   
-            if (table->buckets[i] != NULL)
-            {    
-                crawler = table->buckets[i];
-                while (crawler != NULL)
-                {
-                    temp = crawler->next;
-                    free(crawler);
-                    crawler = temp;
+    for (size_t i = 0; i <BUCKET_COUNT; i++) {
+        free((void*)table->buckets[i]->key);
+    }
 
-                }
-            }        
-        }
-        free(table);
+    // Then free entries array and table itself.
+    free(table->buckets);
+    free(table);
+       
 
 }
 
@@ -223,11 +216,16 @@ int main(int argc, char **argv)
     struct HashTable* table = create();
     assert( find(table, "Test Key") == NULL);
     assert( add(table, "Test Key", 11) == true);
-
-    assert( add(table, "Test Key", 12) == false);
-    // struct Node* node =  find(table, "Test Key");
-    // assert(node != NULL &&  node->value == 11);
-    delete_table(table);
+    assert( add(table, "Test", 11) == true);
+     assert( add(table, "Test", 11) == false);
+    assert( add(table, "Table", 14567) == true);
+    assert( add(table, "acajkclestnew", 11) == true);
+    
+   
+    // struct Binding* binding = find(table, "Testnew");
+    // assert(binding != NULL &&  binding->value == 11);
+    
+   
     display(table);
     return 0;
 }

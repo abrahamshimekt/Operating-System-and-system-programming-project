@@ -21,7 +21,6 @@ void normalStateHandler(enum State *state, char character) {
         putchar(character);
     }
 };
-
 void betweenDoubleQouteStateHandler(enum State *state, char character) {
 
     if (character == '\\') {
@@ -126,8 +125,8 @@ void main(){
 
    enum State state = NORMAL;
 
-    int line = 1;   
-    int commentStartLine = 1;   
+    int line = 0;   
+    int commentStartLine = 0;   
 
     for(;;){
         char character = getchar();
