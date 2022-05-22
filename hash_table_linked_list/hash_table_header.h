@@ -8,6 +8,6 @@
 struct HashTable* create();
 unsigned int hash(const char* key);
 bool add(struct HashTable* table, const char* key, int value);
-struct Node* find(struct HashTable* table, const char* key);
+struct Binding* find(struct HashTable* table, const char* key);
 bool remove_item(struct HashTable* table, const char* key);
 void delete_table(struct HashTable* table);
